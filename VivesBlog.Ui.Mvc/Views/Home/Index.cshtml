@@ -1,0 +1,13 @@
+﻿@model IList<Article>
+@{
+    ViewData["Title"] = "My Fancy Blog";
+}
+
+<div class="row">
+    @foreach (var article in Model)
+    {
+        <div class="col-3">
+            <partial name="ArticleCardPartial" model="article"/>
+        </div>
+    }
+</div>

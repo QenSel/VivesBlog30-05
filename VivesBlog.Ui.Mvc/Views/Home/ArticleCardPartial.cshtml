@@ -1,0 +1,40 @@
+﻿@model Article
+
+@{
+    var localDateTime = Model.CreatedDate.ToLocalTime();
+    var random = new Random();
+    var colors = new List<string>
+    {
+        "text-white bg-primary",
+        "text-white bg-secondary",
+        "text-white bg-success",
+        "text-white bg-danger",
+        "text-dark bg-warning",
+        "text-dark bg-info",
+        "text-dark bg-light",
+        "text-white bg-dark"
+    };
+    var colorIndex = random.Next(colors.Count - 1);
+    var color = colors[colorIndex];
+}
+
+<div class="card @color mb-3" style="max-width: 18rem;">
+    <div class="card-header">@Model.Title</div>
+    <div class="card-body">
+        <h5 class="card-title">
+            @if (Model.Author is not null)
+            {
+                @: by @Model.Author.FirstName @Model.Author.LastName
+            }
+            else
+            {
+                @: No author assigned
+            }
+        </h5>
+        <p class="card-text">@Model.Description</p>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" asp-action="Read" asp-route-id="@Model.Id">Read more ...</a>
+        <small>written on @localDateTime.ToLongDateString() @localDateTime.ToShortTimeString()</small>
+    </div>
+</div>
