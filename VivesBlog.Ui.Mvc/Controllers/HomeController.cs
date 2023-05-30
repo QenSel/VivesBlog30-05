@@ -3,31 +3,32 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using VivesBlog.Ui.Mvc.Core;
 using VivesBlog.Ui.Mvc.Models;
+using VivesBlog.Ui.Mvc.Services;
 
 namespace VivesBlog.Ui.Mvc.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly VivesBlogDbContext _dbContext;
+        private readonly PersonServices _PersonServices;
+        private readonly ArticleServices _ArticleServices;
 
-        public HomeController(VivesBlogDbContext dbContext)
+        public HomeController(PersonServices PersonServices,ArticleServices ArticleServices)
         {
-            _dbContext = dbContext;
+            _PersonServices = PersonServices;
+            _ArticleServices = ArticleServices;
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            var articles = _dbContext.Articles
-                .Include(a => a.Author)
-                .ToList();
+            var articles = _ArticleServices.Find();
             return View(articles);
         }
 
         [HttpGet]
         public IActionResult Read([FromRoute]int id)
         {
-            var article = _dbContext.Articles.FirstOrDefault(a => a.Id == id);
+            var article = _ArticleServices.ReadAll(id);
 
             if (article is null)
             {

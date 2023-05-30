@@ -3,23 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VivesBlog.Ui.Mvc.Core;
 using VivesBlog.Ui.Mvc.Models;
+using VivesBlog.Ui.Mvc.Services;
 
 namespace VivesBlog.Ui.Mvc.Controllers
 {
     public class ArticlesController : Controller
     {
-        private readonly VivesBlogDbContext _dbContext;
+        private readonly ArticleServices _ArticleSercices;
 
-        public ArticlesController(VivesBlogDbContext dbContext)
+        public ArticlesController(ArticleServices ArticleServices)
         {
-            _dbContext = dbContext;
+          _ArticleSercices = ArticleServices;
         }
 
         public IActionResult Index()
         {
-            var articles = _dbContext.Articles
-                .Include(a => a.Author)
-                .ToList();
+            var articles = _ArticleSercices.Find();
+                
             return View(articles);
         }
 
@@ -40,9 +40,7 @@ namespace VivesBlog.Ui.Mvc.Controllers
 
             article.CreatedDate = DateTime.UtcNow;
 
-            _dbContext.Articles.Add(article);
-
-            _dbContext.SaveChanges();
+            _ArticleSercices.Create(article);
 
             return RedirectToAction("Index");
         }
@@ -50,8 +48,7 @@ namespace VivesBlog.Ui.Mvc.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var article = _dbContext.Articles
-                .FirstOrDefault(a => a.Id == id);
+            var article = _ArticleSercices.Get(id);
 
             if (article is null)
             {
@@ -70,7 +67,7 @@ namespace VivesBlog.Ui.Mvc.Controllers
                 return CreateEditView("Edit", article);
             }
 
-            var dbArticle = _dbContext.Articles.FirstOrDefault(a => a.Id == id);
+            var dbArticle = _ArticleSercices.Update(id, article);
 
             if (dbArticle is null)
             {
@@ -82,17 +79,14 @@ namespace VivesBlog.Ui.Mvc.Controllers
             dbArticle.Description = article.Description;
             dbArticle.Content = article.Content;
 
-            _dbContext.SaveChanges();
+            
 
             return RedirectToAction("Index");
         }
 
         private IActionResult CreateEditView([AspMvcView] string viewName, Article? article = null)
         {
-            var people = _dbContext.People
-                .OrderBy(p => p.FirstName)
-                .ThenBy(p => p.LastName)
-                .ToList();
+            var people = _ArticleSercices.GetAll();
 
             ViewBag.People = people;
 
@@ -102,8 +96,7 @@ namespace VivesBlog.Ui.Mvc.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var article = _dbContext.Articles
-                .FirstOrDefault(a => a.Id == id);
+            var article = _ArticleSercices.Get(id);
 
             if (article is null)
             {
@@ -124,8 +117,8 @@ namespace VivesBlog.Ui.Mvc.Controllers
                 Description = string.Empty,
                 Content = string.Empty,
             };
-            _dbContext.Articles.Remove(article);
-            _dbContext.SaveChanges();
+            _ArticleSercices.Delete(id);
+           
 
             return RedirectToAction("Index");
         }

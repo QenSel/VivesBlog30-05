@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VivesBlog.Ui.Mvc.Core;
+using VivesBlog.Ui.Mvc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddDbContext<VivesBlogDbContext>(options =>
 {
     options.UseInMemoryDatabase(nameof(VivesBlogDbContext));
 });
+builder.Services.AddScoped<PersonServices>();
+builder.Services.AddScoped<ArticleServices>();
 
 var app = builder.Build();
 
